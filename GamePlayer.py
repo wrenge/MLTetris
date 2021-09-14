@@ -32,15 +32,17 @@ class GamePlayer(Game):
 
     def next_session(self):
 
-        if os.path.isfile('PlayerSessions/progress.txt'):
-            f = open("PlayerSessions/progress.txt", "r")
+        if os.path.isfile('./PlayerSessions/progress.txt'):
+            f = open("./PlayerSessions/progress.txt", "r")
             self.session = int(f.readline()) + 1
             f.close()
-            f = open("PlayerSessions/progress.txt", "w")
+            f = open("./PlayerSessions/progress.txt", "w")
             f.write(f"{self.session}")
             f.close()
         else:
-            f = open("PlayerSessions/progress.txt", 'w')
+            if not os.path.isdir("./PlayerSessions"):
+                os.mkdir("./PlayerSessions")
+            f = open("./PlayerSessions/progress.txt", 'w+')
             f.write(f"{self.session}")
 
         if self.in_log:
@@ -48,8 +50,8 @@ class GamePlayer(Game):
         if self.out_log:
             self.out_log.close()
 
-        self.in_log = open(f"PlayerSessions/in_{self.session}.txt", "w")
-        self.out_log = open(f"PlayerSessions/out_{self.session}.txt", "w")
+        self.in_log = open(f"./PlayerSessions/in_{self.session}.txt", "w")
+        self.out_log = open(f"./PlayerSessions/out_{self.session}.txt", "w")
         self.seed = self.session
         random.seed(self.seed)
         self.tetris.reset()
