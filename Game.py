@@ -1,5 +1,3 @@
-import random
-
 from GameAction import GameAction
 from Tetris import Tetris
 

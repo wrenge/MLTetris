@@ -100,32 +100,16 @@ class Tetris:
         if self.intersects():
             self.figure.rotation = old_rotation
 
-    # def record_move(self, key):
-    #     if self.state == "gameover":
-    #         pass
-    #     in_log.write(f"{self.move_count}\n")
-    #     out_log.write(f"{self.move_count}\n")
-    #     out_log.write(f"{key.value}\n")
-    #
-    #     snapshot = self.make_snapshot()
-    #     for i in snapshot:
-    #         count = len(i) - 1
-    #         for j in range(0, count):
-    #             in_log.write(f"{i[j]}")
-    #             in_log.write('\n' if j + 1 == count else ' ')
-
     def make_snapshot(self):
         snapshot = []
         for row in self.field:
             snapshot.append(row.copy())
-            for i in range(0, len(row)):
-                snapshot[len(snapshot) - 1][i] = 1 if row[i] > 0 else 0
 
         if self.figure is not None:
             for i in range(4):
                 for j in range(4):
                     if i * 4 + j in self.figure.image():
-                        snapshot[i + self.figure.y][j + self.figure.x] = 2
+                        snapshot[i + self.figure.y][j + self.figure.x] = -self.figure.color
 
         return snapshot
 

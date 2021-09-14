@@ -31,7 +31,6 @@ class GamePlayer(Game):
         self.reset_cd()
 
     def next_session(self):
-        random.seed(self.seed)
 
         if os.path.isfile('PlayerSessions/progress.txt'):
             f = open("PlayerSessions/progress.txt", "r")
@@ -51,6 +50,8 @@ class GamePlayer(Game):
 
         self.in_log = open(f"PlayerSessions/in_{self.session}.txt", "w")
         self.out_log = open(f"PlayerSessions/out_{self.session}.txt", "w")
+        self.seed = self.session
+        random.seed(self.seed)
         self.tetris.reset()
         self.tetris.new_figure()
 
@@ -120,7 +121,7 @@ class GamePlayer(Game):
 
         snapshot = self.tetris.make_snapshot()
         for i in snapshot:
-            count = len(i) - 1
+            count = len(i)
             for j in range(0, count):
                 self.in_log.write(f"{i[j]}")
                 self.in_log.write('\n' if j + 1 == count else ' ')
