@@ -1,10 +1,13 @@
 import os
 import random
 
+import numpy as np
 import pygame
 
 from Game import Game
 from GameAction import GameAction
+from MoveInfo import MoveInfo
+from PIL import Image
 
 
 class GamePlayer(Game):
@@ -12,10 +15,11 @@ class GamePlayer(Game):
     fps = 30
     step_period = 2000
     next_step_stamp = time + step_period
-    session = 0
     out_log = None
     in_log = None
     seed = 0
+    session = 1
+    moves = []
 
     def __init__(self):
         super().__init__()
@@ -31,27 +35,11 @@ class GamePlayer(Game):
         self.reset_cd()
 
     def next_session(self):
-
         if os.path.isfile('./PlayerSessions/progress.txt'):
             f = open("./PlayerSessions/progress.txt", "r")
             self.session = int(f.readline()) + 1
             f.close()
-            f = open("./PlayerSessions/progress.txt", "w")
-            f.write(f"{self.session}")
-            f.close()
-        else:
-            if not os.path.isdir("./PlayerSessions"):
-                os.mkdir("./PlayerSessions")
-            f = open("./PlayerSessions/progress.txt", 'w+')
-            f.write(f"{self.session}")
 
-        if self.in_log:
-            self.in_log.close()
-        if self.out_log:
-            self.out_log.close()
-
-        self.in_log = open(f"./PlayerSessions/in_{self.session}.txt", "w")
-        self.out_log = open(f"./PlayerSessions/out_{self.session}.txt", "w")
         self.seed = self.session
         random.seed(self.seed)
         self.tetris.reset()
@@ -84,6 +72,7 @@ class GamePlayer(Game):
         if self.input == GameAction.QUIT:
             self.done = True
         if self.input == GameAction.RESET:
+            self.end_session()
             self.next_session()
 
         if self.tetris.playing:
@@ -117,19 +106,36 @@ class GamePlayer(Game):
         self.next_step_stamp = self.time + self.step_period
 
     def record_move(self, key):
-        self.in_log.write(f"{self.tetris.move_count}\n")
-        self.out_log.write(f"{self.tetris.move_count}\n")
-        self.out_log.write(f"{key.value}\n")
+        if key == GameAction.IGNORE:
+            return
 
         snapshot = self.tetris.make_snapshot()
-        for i in snapshot:
-            count = len(i)
-            for j in range(0, count):
-                self.in_log.write(f"{i[j]}")
-                self.in_log.write('\n' if j + 1 == count else ' ')
+        self.moves.append(MoveInfo(snapshot, self.tetris.figure, key))
 
     def quit(self):
-        if self.in_log:
-            self.in_log.close()
-        if self.out_log:
-            self.out_log.close()
+        pass
+
+    def end_session(self):
+        self.save_progress()
+        self.save_moves()
+
+    def save_progress(self):
+        if os.path.isfile('./PlayerSessions/progress.txt'):
+            f = open("./PlayerSessions/progress.txt", "w")
+            f.write(f"{self.session}")
+            f.close()
+        else:
+            if not os.path.isdir("./PlayerSessions"):
+                os.mkdir("./PlayerSessions")
+            f = open("./PlayerSessions/progress.txt", 'w+')
+            f.write(f"{self.session}")
+            f.close()
+
+    def save_moves(self):
+        session_path = f"./PlayerSessions/{self.session}/"
+        if not os.path.isdir(session_path):
+            os.mkdir(session_path)
+
+        for i in range(len(self.moves)):
+            img = Image.fromarray(np.uint8(np.array(self.moves[i].snapshot) * 255))
+            img.save(session_path + f"{i}_{self.moves[i].move.value}.bmp")

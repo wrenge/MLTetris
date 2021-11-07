@@ -8,7 +8,8 @@ from GameAction import GameAction
 
 
 class GameReplay(Game):
-    input_path = "PlayerSessions/out_2.txt"
+    replay_number = 0
+    input_path = "PlayerSessions/out_{0}.txt"
     fps = 30
     moves = []
     seed = 0
@@ -26,7 +27,7 @@ class GameReplay(Game):
         self.time = self.clock.get_time()
 
     def init_moves(self):
-        moves_file = open(self.input_path, "r")
+        moves_file = open(self.input_path.format(self.replay_number), "r")
         lines = moves_file.readlines()
         moves_file.close()
         for i in range(0, len(lines)):

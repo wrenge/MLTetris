@@ -57,9 +57,9 @@ class Tetris:
                     zeros += 1
             if zeros == 0:
                 lines += 1
-                for i1 in range(i, 1, -1):
+                for i1 in range(i, -1, -1):
                     for j in range(self.width):
-                        self.field[i1][j] = self.field[i1 - 1][j]
+                        self.field[i1][j] = 0 if i1 == 0 else self.field[i1 - 1][j]
         self.score += lines ** 2
 
     def go_space(self):
