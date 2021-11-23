@@ -138,4 +138,4 @@ class GamePlayer(Game):
 
         for i in range(len(self.moves)):
             img = Image.fromarray(np.uint8(np.array(self.moves[i].snapshot) * 255))
-            img.save(session_path + f"{i}_{self.moves[i].move.value}.bmp")
+            img.save(session_path + f"{i:05d}_{self.moves[i].move.value}.bmp")

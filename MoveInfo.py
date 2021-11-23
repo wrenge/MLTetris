@@ -20,9 +20,9 @@ class MoveInfo:
             new_line = []
             for j in range(len(field[i])):
                 if field[i][j] > 0:
-                    new_line.append(0.5)
+                    new_line.append((1, 0, 0))
                 elif self.figure[i][j] > 0:
-                    new_line.append(1)
+                    new_line.append((0, 1, 0))
                 else:
-                    new_line.append(0)
+                    new_line.append((0, 0, 0))
             self.snapshot.append(new_line)
